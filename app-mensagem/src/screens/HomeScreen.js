@@ -11,7 +11,7 @@ export default function HomeScreen({ navigation }) {
     <View style={styles.container}>
       <FlatList
         data={contatos}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.item}

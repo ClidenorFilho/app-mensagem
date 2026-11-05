@@ -9,26 +9,23 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { getMensagens, adicionarMensagem } from '../services/mensagemService';
 import Mensagem from '../components/mensagem';
-import * as mensagemService from "../services/mensagemService"
 
 export default function ChatScreen({ route }) {
-  const { contatoNome, contatoId } = route.params;
-
-  const [mensagens, setMensagens] = useState(
-    mensagemService.getMensagens(contatoId)
-  );
-
+  const insets = useSafeAreaInsets();
+  const { contatoId } = route.params;
+  const [mensagens, setMensagens] = useState([...getMensagens(contatoId)]);
   const [texto, setTexto] = useState('');
 
   function enviar() {
-    if (texto.trim() === '') return;
-
-    mensagemService.adicionarMensagem(contatoId, texto)
-    
-    const mensagensAtualizadas = mensagemService.getMensagens(contatoId);
-
-    setMensagens(mensagensAtualizadas);
+    try {
+      adicionarMensagem(contatoId, texto.trim());
+    } catch (e) {
+      return;
+    }
+    setMensagens([...getMensagens(contatoId)]);
     setTexto('');
   }
 
@@ -40,7 +37,7 @@ export default function ChatScreen({ route }) {
     >
       <FlatList
         data={mensagens}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.lista}
         renderItem={({ item }) => (
             <Mensagem
@@ -50,7 +47,7 @@ export default function ChatScreen({ route }) {
         )}
       />
 
-      <View style={styles.rodape}>
+      <View style={[styles.rodape, { paddingBottom: 8 + insets.bottom }]}>
         <TextInput
           style={styles.input}
           value={texto}
