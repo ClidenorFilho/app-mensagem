@@ -9,22 +9,26 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import Mensagem from '../components/mensagem';
+import * as mensagemService from "../services/mensagemService"
 
 export default function ChatScreen({ route }) {
-  const { contatoNome } = route.params;
-  const [mensagens, setMensagens] = useState([]);
+  const { contatoNome, contatoId } = route.params;
+
+  const [mensagens, setMensagens] = useState(
+    mensagemService.getMensagens(contatoId)
+  );
+
   const [texto, setTexto] = useState('');
 
   function enviar() {
     if (texto.trim() === '') return;
 
-    const novaMensagem = {
-      id: String(Date.now()),
-      texto: texto.trim(),
-      recebida: false,
-    };
+    mensagemService.adicionarMensagem(contatoId, texto)
+    
+    const mensagensAtualizadas = mensagemService.getMensagens(contatoId);
 
-    setMensagens((prev) => [...prev, novaMensagem]);
+    setMensagens(mensagensAtualizadas);
     setTexto('');
   }
 
@@ -39,14 +43,10 @@ export default function ChatScreen({ route }) {
         keyExtractor={(item) => item.id}
         contentContainerStyle={styles.lista}
         renderItem={({ item }) => (
-          <View
-            style={[
-              styles.bolha,
-              item.recebida ? styles.bolhaEsquerda : styles.bolhaDireita,
-            ]}
-          >
-            <Text style={styles.textoMensagem}>{item.texto}</Text>
-          </View>
+            <Mensagem
+              texto={item.texto}
+              recebida={item.recebida}
+            />
         )}
       />
 
@@ -73,23 +73,6 @@ const styles = StyleSheet.create({
   lista: {
     padding: 12,
     flexGrow: 1,
-  },
-  bolha: {
-    maxWidth: '75%',
-    padding: 10,
-    borderRadius: 8,
-    marginBottom: 8,
-  },
-  bolhaDireita: {
-    backgroundColor: '#DCF8C6',
-    alignSelf: 'flex-end',
-  },
-  bolhaEsquerda: {
-    backgroundColor: '#F0F0F0',
-    alignSelf: 'flex-start',
-  },
-  textoMensagem: {
-    fontSize: 15,
   },
   rodape: {
     flexDirection: 'row',
