@@ -9,9 +9,11 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMensagens, adicionarMensagem } from '../services/mensagemService';
 
 export default function ChatScreen({ route }) {
+  const insets = useSafeAreaInsets();
   const { contatoId } = route.params;
   const [mensagens, setMensagens] = useState([...getMensagens(contatoId)]);
   const [texto, setTexto] = useState('');
@@ -48,7 +50,7 @@ export default function ChatScreen({ route }) {
         )}
       />
 
-      <View style={styles.rodape}>
+      <View style={[styles.rodape, { paddingBottom: 8 + insets.bottom }]}>
         <TextInput
           style={styles.input}
           value={texto}
