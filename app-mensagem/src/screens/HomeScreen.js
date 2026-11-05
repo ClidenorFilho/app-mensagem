@@ -1,19 +1,15 @@
 import React from 'react';
 import { View, Text, FlatList, TouchableOpacity, StyleSheet } from 'react-native';
+import { listarContatos } from '../services/contatoService';
 
-const contatos = [
-  { id: '1', nome: 'Ana Silva' },
-  { id: '2', nome: 'Bruno Costa' },
-  { id: '3', nome: 'Carla Souza' },
-  { id: '4', nome: 'Diego Lima' },
-];
+const contatos = listarContatos();
 
 export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <FlatList
         data={contatos}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         renderItem={({ item }) => (
           <TouchableOpacity
             style={styles.item}

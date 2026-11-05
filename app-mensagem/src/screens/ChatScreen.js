@@ -9,22 +9,20 @@ import {
   KeyboardAvoidingView,
   Platform,
 } from 'react-native';
+import { getMensagens, adicionarMensagem } from '../services/mensagemService';
 
 export default function ChatScreen({ route }) {
-  const { contatoNome } = route.params;
-  const [mensagens, setMensagens] = useState([]);
+  const { contatoId } = route.params;
+  const [mensagens, setMensagens] = useState([...getMensagens(contatoId)]);
   const [texto, setTexto] = useState('');
 
   function enviar() {
-    if (texto.trim() === '') return;
-
-    const novaMensagem = {
-      id: String(Date.now()),
-      texto: texto.trim(),
-      recebida: false,
-    };
-
-    setMensagens((prev) => [...prev, novaMensagem]);
+    try {
+      adicionarMensagem(contatoId, texto.trim());
+    } catch (e) {
+      return;
+    }
+    setMensagens([...getMensagens(contatoId)]);
     setTexto('');
   }
 
@@ -36,13 +34,13 @@ export default function ChatScreen({ route }) {
     >
       <FlatList
         data={mensagens}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => String(item.id)}
         contentContainerStyle={styles.lista}
         renderItem={({ item }) => (
           <View
             style={[
               styles.bolha,
-              item.recebida ? styles.bolhaEsquerda : styles.bolhaDireita,
+              item.recebido ? styles.bolhaEsquerda : styles.bolhaDireita,
             ]}
           >
             <Text style={styles.textoMensagem}>{item.texto}</Text>
