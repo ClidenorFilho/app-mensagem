@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   View,
   Text,
@@ -12,6 +12,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { getMensagens, adicionarMensagem } from '../services/mensagemService';
 import Mensagem from '../components/mensagem';
+import { mqttService } from '../services/mqttService';
+import { TOPIC } from '../../config';
 
 export default function ChatScreen({ route }) {
   const insets = useSafeAreaInsets();
@@ -19,14 +21,23 @@ export default function ChatScreen({ route }) {
   const [mensagens, setMensagens] = useState([...getMensagens(contatoId)]);
   const [texto, setTexto] = useState('');
 
+  useEffect(() => {
+      const cancelar = mqttService.subscribe(TOPIC, () => {
+          setMensagens([...getMensagens(contatoId)]);
+      });
+
+      return () => cancelar();
+  }, [contatoId]);
+
   function enviar() {
     try {
-      adicionarMensagem(contatoId, texto.trim());
+        adicionarMensagem(contatoId, texto.trim());
+
+        setMensagens([...getMensagens(contatoId)]);
+        setTexto('');
     } catch (e) {
-      return;
-    }
-    setMensagens([...getMensagens(contatoId)]);
-    setTexto('');
+        console.error(e);
+    }    
   }
 
   return (
@@ -42,7 +53,7 @@ export default function ChatScreen({ route }) {
         renderItem={({ item }) => (
             <Mensagem
               texto={item.texto}
-              recebida={item.recebida}
+              recebido={item.recebido}
             />
         )}
       />

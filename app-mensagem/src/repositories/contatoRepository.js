@@ -1,11 +1,11 @@
 const contatos = [
     {
         id: 1,
-        nome: "Clairo"
+        nome: "Comunicar com outro cliente"
     },
     {
         id: 2,
-        nome: "Pedro",
+        nome: "Clairo",
     },
     {
         id: 3,

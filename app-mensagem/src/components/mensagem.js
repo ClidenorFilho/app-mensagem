@@ -1,11 +1,11 @@
 import { View, Text, StyleSheet } from 'react-native';
 
-export default function Mensagem({ texto, recebida }) {
+export default function Mensagem({ texto, recebido }) {
   return (
     <View
       style={[
         styles.bolha,
-        recebida ? styles.bolhaEsquerda : styles.bolhaDireita,
+        recebido ? styles.bolhaEsquerda : styles.bolhaDireita,
       ]}
     >
       <Text style={styles.textoMensagem}>{texto}</Text>
